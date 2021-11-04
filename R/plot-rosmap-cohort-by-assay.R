@@ -8,15 +8,32 @@ library(fastDummies)
 library(sagethemes)
 
 # load reticulate and python client
-library(reticulate)
 synapse <- reticulate::import("synapseclient")
 syn <- synapse$Synapse()
 
 # login to Synapse
 syn$login()
 
-### Get de-identified Rosmap data -----------
-rosmap_obj <- syn$get("syn26436148")
+### Get ROSMAP biospecimen metadata -----------
+
+# ## if specimens have been added to the biospecimen file, uncomment and run:
+# rosmap_biospecimen <- syn$get("syn21323366")$path %>% 
+#   read_csv(col_types = cols(.default = col_character())) %>% 
+#   type_convert()
+# 
+# # select individualID, organ, tissue, and assay columns
+# # remove "GISpool" individuals or anything that doesn't have an 'R' id
+# # this leaves us with the de-identified public individualIDs, organ, tissue, and assay, so the file can be open access
+# deid_rosmap_biospecimen <- rosmap_biospecimen %>% 
+#   select(individualID, organ, tissue, assay) %>% 
+#   filter(str_detect(individualID, "R"))
+# 
+# # store de-id'd file in Synapse project
+# write_csv(deid_rosmap_biospecimen, here("temp/rosmap_individual_ids.csv"))
+# syn$store(synapse$entity$File(here("temp/rosmap_individual_ids.csv"), parent = "syn26436146"))
+
+# retrieve de-identified file from File Table project
+rosmap_obj <- syn$get("syn26438202")
 rosmap <- read_csv(rosmap_obj$path)
 
 ### Upset plot by assay ---------------------
