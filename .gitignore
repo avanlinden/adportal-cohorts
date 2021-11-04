@@ -27,3 +27,5 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 adportal-cohorts.Rproj
+#DS_Store
+.DS_Store
