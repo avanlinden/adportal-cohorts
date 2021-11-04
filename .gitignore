@@ -28,4 +28,6 @@ vignettes/*.pdf
 .Renviron
 adportal-cohorts.Rproj
 #DS_Store
+# temporary synapse files
+/temp*
 .DS_Store
