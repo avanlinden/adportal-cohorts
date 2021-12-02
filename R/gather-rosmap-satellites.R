@@ -54,3 +54,11 @@ df_colnames <-
 
 df_sub <- map(df_assay, ~dplyr::select(., individualID, specimenID, study, organ, tissue, assay))
 
+rosmap_satellite_specimens <- df_sub %>% 
+  reduce(rbind)
+
+# write to csv and store to synapse project
+
+write_csv(rosmap_satellite_specimens, here("temp/rosmap-satellite-study-specimens.csv"))
+
+syn$store(synapse$entity$File(here("temp/rosmap-satellite-study-specimens.csv"), parent = "syn26436146"))
