@@ -47,10 +47,12 @@ mayo_metabolon <- syn$get("syn26446592")$path %>%
 
 
 # combine current and expected specimens
+# remove 30 missing individualIDs - proteomics study pools
 
 mayo_combined <- mayo_expected %>% select(colnames(mayo)) %>% 
   bind_rows(mayo) %>% 
-  bind_rows(mayo_metabolon)
+  bind_rows(mayo_metabolon) %>% 
+  filter(!is.na(individualID))
 
 # add datatypes 
 geneExpression <- c("scrnaSeq", "mirnaArray", "rnaSeq", "rnaArray", "snrnaSeq")
