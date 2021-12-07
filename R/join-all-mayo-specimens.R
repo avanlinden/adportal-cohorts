@@ -30,11 +30,27 @@ mayo_expected <- syn$get("syn26524978")$path %>%
          assay = "ChIPSeq",
          study = "MayoRNAseq")
 
+# add expected metabolon specimens from Richa's manuscript:
+
+mayo_metabolon <- syn$get("syn26446592")$path %>% 
+  readxl::read_excel(sheet = 3) %>% 
+  separate(CLIENT.IDENTIFIER, into = c("individualID", "tissue"), sep = "_") %>% 
+  mutate(specimenID = paste0(SubjectID, "_metabolon"),
+         organ = "brain",
+         tissue = case_when(tissue == "TCX" ~ "temporal cortex",
+                            tissue == "CER" ~ "cerebellum",
+                            TRUE ~ NA_character_),
+         dataStatus = "expected",
+         assay = "Metabolon",
+         study = "MayoRNAseq") %>% 
+  select(colnames(mayo))
+
 
 # combine current and expected specimens
 
 mayo_combined <- mayo_expected %>% select(colnames(mayo)) %>% 
-  bind_rows(mayo)
+  bind_rows(mayo) %>% 
+  bind_rows(mayo_metabolon)
 
 # add datatypes 
 geneExpression <- c("scrnaSeq", "mirnaArray", "rnaSeq", "rnaArray", "snrnaSeq")
