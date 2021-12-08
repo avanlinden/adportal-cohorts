@@ -6,7 +6,7 @@ clinical <- syn$get("syn3191087")$path %>%
 
 # ROSMAP biospecimen file
 rosmap <- syn$get("syn21323366")$path %>% 
-  read_csv(col_select = c(individualID, specimenID, organ, tissue, assay)) %>% 
+  read_csv(col_select = c(individualID, specimenID, organ, tissue, cellType, assay)) %>% 
   mutate(study = "ROSMAP",
          dataStatus = "received")
 
@@ -14,7 +14,8 @@ rosmap <- syn$get("syn21323366")$path %>%
 
 satellites <- syn$get("syn26522612")$path %>% 
   read_csv() %>% 
-  mutate(dataStatus = "received")
+  mutate(dataStatus = "received",
+         cellType = NA_character_)
 
 # expected donors from upcoming snRNAseq
 
@@ -34,7 +35,8 @@ exp_rosmap <- exp_projids %>%
          organ = "brain",
          tissue = "dorsolateral prefrontal cortex",
          dataStatus = "expected",
-         study = "expected_snrnaSeq") %>% 
+         study = "expected_snrnaSeq",
+         cellType = NA_character_) %>% 
   select(colnames(satellites))
 
 # join all rosmap specimen info
