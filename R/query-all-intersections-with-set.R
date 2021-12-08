@@ -1,19 +1,5 @@
 # function to apply upset queries that select all intersections with one ore more terms
 
-# test plot
-
-upset(
-  rosmap_boolean_categories,
-  rev(sortedUpsetCategories),
-  min_size = 30,
-)
-
-# all possible intersections given data, categories, and minimum intersection size
-intersections <-  unique(upset_data(data = rosmap_boolean_categories,
-                                    intersect = sortedUpsetCategories,
-                                    min_size = 30)$plot_intersections_subset)
-
-
 # function that takes the data, sets, and minimum intersection size for the upset plot data,
 # plus a vector of strings matching one or more sets, and returns a vector of every intersection
 # for the given upset plot that contains at least one of those sets
@@ -51,4 +37,12 @@ generate_upset_query_list <- function(intersection_queries, color, fill, set = N
 
 test_list <- generate_upset_query_list(test, color = "blue", fill = "blue")
 
-g
+# test plot
+
+upset(
+  rosmap_boolean_categories,
+  rev(sortedUpsetCategories),
+  min_size = 30,
+  queries = test_list
+)
+
