@@ -131,5 +131,5 @@ syn$store(synapse$entity$File(here("plots/upset-plot-all-rosmap-specimens-by-dat
 
 # save boolean table to synapse
 
-table <- synapse$build_table("ROSMAP Cohort by Data Type", "syn26427423", rosmap_datatype_bool)
+table <- synapse$build_table("ROSMAP Cohort by Data Type", "syn26427423", rosmap_boolean_categories)
 syn$store(table)
