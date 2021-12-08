@@ -72,3 +72,15 @@ upset(mayo_boolean_categories,
       )
 ) +
   ggtitle('Mayo individuals by assay type')
+
+# save and store plot and table
+ggsave("plots/upset-plot-all-mayo-specimens-by-assay.pdf")
+
+# save upset plot to synapse
+syn$store(synapse$entity$File(here("plots/upset-plot-all-mayo-specimens-by-assay.pdf"), parent = "syn26436146"))
+
+
+# save boolean table to synapse
+
+table <- synapse$build_table("Mayo Cohort by Data Type", "syn26427423", mayo_boolean_categories)
+syn$store(table)
