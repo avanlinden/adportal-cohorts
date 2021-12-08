@@ -121,4 +121,15 @@ rosmap_boolean_categories %>%
   ) +
   ggtitle('ROSMAP individuals with at least two assay types')
 
+# save plot and store
 
+ggsave("plots/upset-plot-all-rosmap-specimens-by-datatype.pdf")
+
+# save upset plot to synapse
+syn$store(synapse$entity$File(here("plots/upset-plot-all-rosmap-specimens-by-datatype.pdf"), parent = "syn26436146"))
+
+
+# save boolean table to synapse
+
+table <- synapse$build_table("ROSMAP Cohort by Data Type", "syn26427423", rosmap_datatype_bool)
+syn$store(table)
