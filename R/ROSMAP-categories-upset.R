@@ -3,38 +3,25 @@
 library(ComplexUpset)
 library(fastDummies)
 
-### ROSMAP by datatype =====================
+### Download and prepare data =====================
 
-# Suzanna's categories:
+# Suzanna's/Mette's categories:
 # Genomic Variants (WGS + snpArray)
 # bulk brain RNAseq
 # bulk monocytes RNAseq
 # bulk microglia RNAseq
-# rnaArray
 # microRNAarray (nonstring)
 # sn/scRNAseq
 # epigenetics (ChiPseq + methylationArray + bisulfiteSeq)
 # LC-SRM
 # TMT quantitation
-# p180 brain
-# p180 serum
-# biocrates bile acids + metabolon - brain only
-# lipidomics (brain + plasma?)
+# brain metabolomics (p180, Biocrates BA, Metabolon)
+# brain lipidomics 
+# peripheral metabolomics (p180)
+# peripheral lipidomics
 
 # download de-id data
 rosmap <- syn$get("syn26522644")$path %>% read_csv()
-
-# check rnaArray vs rnaSeq overlap
-rosmap_rnaArray_ids <- rosmap %>% 
-  filter(assay == "rnaArray") %>% 
-  pull(individualID)
-
-rosmap_bulkRNAseq_ids <- rosmap %>% 
-  filter(assay == "rnaSeq" & organ == "brain" & is.na(cellType)) %>% 
-  pull(individualID)
-
-#45 out of 492 individuals with rnaArray data but no bulk brain rnaSeq
-rosmap_rnaArray_ids[!(rosmap_rnaArray_ids %in% rosmap_bulkRNAseq_ids)]
 
 # assign "Suzana categories"
 # remove rnaArray rows
@@ -57,6 +44,7 @@ rosmap_upset_categories <- rosmap %>%
                                    TRUE ~ NA_character_))
 
 
+# use fastDummies::dummy_cols to convert to binary presence/absence matrix per individual
 rosmap_binary_categories <- rosmap_upset_categories %>% 
   select(individualID, upsetCategory) %>% 
   distinct() %>% 
@@ -65,10 +53,16 @@ rosmap_binary_categories <- rosmap_upset_categories %>%
   summarise(across(where(is.integer), sum)) %>% 
   rename_with(~str_remove(.x, "upsetCategory_"))
 
-upsetCategories = colnames(rosmap_binary_categories)[2:14]
+# convert to boolean matrix
 
+# which cols to make boolean - ignore individualID fist column
+make_boolean_cols <- colnames(rosmap_binary_categories)[2:length(rosmap_binary_categories)]
+# create boolean df as copy of binary df
 rosmap_boolean_categories <- rosmap_binary_categories
-rosmap_boolean_categories[upsetCategories] <- rosmap_boolean_categories[upsetCategories] == 1
+# convert to boolean
+rosmap_boolean_categories[make_boolean_cols] <- rosmap_boolean_categories[make_boolean_cols] == 1
+
+### Create upset plot ======================
 
 # sort datatype categories for metadata stripes
 rosmap_upset_categories %>% 
