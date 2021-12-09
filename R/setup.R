@@ -2,6 +2,8 @@
 library(here)
 library(reticulate)
 library(tidyverse)
+library(fastDummies)
+library(ComplexUpset)
 
 # load reticulate and python client
 synapse <- reticulate::import("synapseclient")
