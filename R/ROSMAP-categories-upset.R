@@ -25,15 +25,18 @@ rosmap <- syn$get("syn26522644")$path %>% read_csv()
 
 # assign "Suzana categories"
 # remove rnaArray rows
-rosmap_upset_categories <- rosmap %>% 
+rosmap_suzana_categories <- rosmap %>% 
   filter(!assay == "rnaArray") %>% 
-  mutate(upsetCategory = case_when(dataType == "genomicVariants" ~ "genomic variants",
+  mutate(suzanaCategory = case_when(assay == "snpArray" ~ "snpArray",
+                                   assay == "wholeGenomeSeq" ~ "WGS",
+                                   assay == "methylationArray" ~ "methylationArray",
+                                   assay == "ChIPSeq" ~ "ChIPSeq",
+                                   assay == "bisulfiteSeq" ~ "bisulfiteSeq",
                                    assay == "rnaSeq" & organ == "brain" & is.na(cellType) ~ "brain bulk RNAseq",
                                    assay == "rnaSeq" & cellType == "monocytes" ~ "monocyte bulk RNAseq",
                                    assay == "rnaSeq" & cellType == "microglia" ~ "microglia bulk RNAseq",
                                    assay == "mirnaArray" ~ "miRNA array",
                                    assay == "snrnaSeq" | assay == "scrnaSeq" ~ "sc/snRNAseq",
-                                   dataType == "epigenetics" ~ "epigenetics",
                                    assay == "label free mass spectrometry" ~ "LC-SRM",
                                    assay == "TMT quantitation" ~ "TMT quantitation",
                                    assay == "Biocrates p180" & organ == "brain" ~ "brain metabolomics",
@@ -45,13 +48,19 @@ rosmap_upset_categories <- rosmap %>%
 
 
 # use fastDummies::dummy_cols to convert to binary presence/absence matrix per individual
-rosmap_binary_categories <- rosmap_upset_categories %>% 
-  select(individualID, upsetCategory) %>% 
+rosmap_binary_suzana <- rosmap_suzana_categories %>% 
+  select(individualID, suzanaCategory) %>% 
   distinct() %>% 
-  fastDummies::dummy_cols(select_columns = "upsetCategory") %>% 
+  fastDummies::dummy_cols(select_columns = "suzanaCategory") %>% 
   group_by(individualID) %>% 
   summarise(across(where(is.integer), sum)) %>% 
-  rename_with(~str_remove(.x, "upsetCategory_"))
+  rename_with(~str_remove(.x, "suzanaCategory_"))
+
+# filter
+
+rosmap_binary_suzana %>% 
+  filter(`monocyte bulk RNAseq` == 1) %>% 
+  filter(`snpArray` == 1)
 
 # convert to boolean matrix
 
