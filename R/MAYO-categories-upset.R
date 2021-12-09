@@ -7,7 +7,7 @@ mayo <- syn$get("syn26529014")$path %>% read_csv()
 mayo_upset_categories <- mayo %>% 
   mutate(individualID = as.character(individualID),
          upsetCategory = case_when(assay == "label free mass spectrometry" ~ "label free proteomics",
-                                   assay %in% c("snpArray", "wholeGenomeSeq") ~ "genomic variants",
+                                   #assay %in% c("snpArray", "wholeGenomeSeq") ~ "genomic variants",
                                    assay == "rnaSeq" ~ "bulk RNAseq",
                                    TRUE ~ assay))
 
@@ -29,7 +29,8 @@ mayo_boolean_categories <- mayo_binary_categories
 mayo_boolean_categories[mayo_boolean_cols] <- mayo_boolean_categories[mayo_boolean_cols] == 1
 
 # sorted mayo categories 
-mayoUpsetCategories <- c("genomic variants",
+mayoUpsetCategories <- c("snpArray",
+                         "wholeGenomeSeq",
                          "bulk RNAseq",
                          "label free proteomics",
                          "ChIPSeq",
