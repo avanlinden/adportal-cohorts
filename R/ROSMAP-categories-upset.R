@@ -84,11 +84,10 @@ sortedUpsetCategories <- c("genomic variants",
 rosmap_boolean_categories %>%
   upset(rev(sortedUpsetCategories),
         name = "Assay Type", 
-        min_size = 10,
-        min_degree = 2,
+        min_size = 3,
         width_ratio = 0.2,
         height_ratio = 0.8,
-        sort_sets = FALSE,
+        #sort_sets = FALSE,
         sort_intersections_by = "cardinality",
         matrix=(
           intersection_matrix(
@@ -119,14 +118,14 @@ rosmap_boolean_categories %>%
           )
         )
   ) +
-  ggtitle('ROSMAP individuals with at least two assay types')
+  ggtitle('ROSMAP individuals by assay types')
 
 # save plot and store
 
-ggsave("plots/upset-plot-all-rosmap-specimens-by-datatype.pdf")
+ggsave("plots/upset-plot-all-rosmap-specimens-by-assay.pdf")
 
 # save upset plot to synapse
-syn$store(synapse$entity$File(here("plots/upset-plot-all-rosmap-specimens-by-datatype.pdf"), parent = "syn26436146"))
+syn$store(synapse$entity$File(here("plots/upset-plot-all-rosmap-specimens-by-assay.pdf"), parent = "syn26436146"))
 
 
 # save boolean table to synapse
