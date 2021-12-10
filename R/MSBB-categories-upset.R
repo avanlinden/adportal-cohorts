@@ -11,9 +11,14 @@ msbb %>% group_by(assay) %>% count() %>% arrange(desc(n))
 
 msbb_upset_categories <- msbb %>% 
   mutate(individualID = as.character(individualID),
+         dataType = case_when(assay == "exomeSeq" ~"genomicVariants", 
+                              assay == "HI-C" | assay == "ATACSeq" ~ "epigenetics",
+                              TRUE ~ dataType),
          upsetCategory = case_when(assay == "label free mass spectrometry" ~ "label free proteomics",
-                                   #assay %in% c("snpArray", "wholeGenomeSeq") ~ "genomic variants",
+                                   dataType == "genomicVariants" ~ "genomic variants",
                                    assay == "rnaSeq" ~ "bulk RNAseq",
+                                   dataType == "epigenetics" ~ "epigenetics",
+                                   assay == "TMT quantitation" ~ "TMT proteomics",
                                    TRUE ~ assay))
 
 # make binary
@@ -35,14 +40,10 @@ msbb_boolean_categories[msbb_boolean_cols] <- msbb_boolean_categories[msbb_boole
 
 # msbb sorted categories
 msbbUpsetCategories <- c( "bulk RNAseq",
-                          "ATACSeq",
-                          "exomeSeq",
-                          "wholeGenomeSeq",
+                          "genomic variants",
                           "label free proteomics",
-                          "ChIPSeq",
-                          "methylationArray",
-                          "TMT quantitation",
-                          "HI-C")
+                          "TMT proteomics",
+                          "epigenetics")
 
 # no colors upset plot:
 upset(msbb_boolean_categories,
@@ -51,6 +52,7 @@ upset(msbb_boolean_categories,
       width_ratio = 0.2,
       height_ratio = 0.8,
       min_size = 1,
+      min_degree = 2,
       sort_intersections_by = "cardinality",
       matrix=(
         intersection_matrix(
@@ -81,7 +83,7 @@ upset(msbb_boolean_categories,
         )
       )
 ) +
-  ggtitle('MSBB individuals by assay type')
+  labs(caption = "MSBB")
 
 # save and store plot and table
 ggsave("plots/upset-plot-all-msbb-specimens-by-assay.pdf")
