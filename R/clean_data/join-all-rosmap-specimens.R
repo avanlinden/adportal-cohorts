@@ -39,12 +39,31 @@ exp_rosmap <- exp_projids %>%
          cellType = NA_character_) %>% 
   select(colnames(satellites))
 
+# expected serum samples from Colette
+serum <- syn$get("syn26533284")$path %>% 
+  readxl::read_excel() %>% 
+  transmute(projid = `Serum (450)`)
+
+# join to individualIDs in clinical file
+# create dummy specimenIds
+exp_serum <- serum %>% 
+  left_join(clinical, by = "projid") %>% 
+  mutate(specimenID = paste0(individualID, "_expected_serum_metabolon"),
+         assay = "Metabolon",
+         organ = "blood",
+         tissue = "serum",
+         dataStatus = "expected",
+         study = "expected_serum_Metabolon",
+         cellType = NA_character_) %>% 
+  select(colnames(satellites))
+
 # join all rosmap specimen info
 # filter out individuals not in the clinical file
 rosmap_combined <- rosmap %>% 
   select(colnames(satellites)) %>% 
   bind_rows(satellites) %>% 
   bind_rows(exp_rosmap) %>% 
+  bind_rows(exp_serum) %>% 
   filter(individualID %in% clinical$individualID)
 
 # set up datatype by assay groups
