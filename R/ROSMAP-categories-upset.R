@@ -1,8 +1,5 @@
 ### Use ComplexUpset package to generate upset plot
 
-library(ComplexUpset)
-library(fastDummies)
-
 ### Download and prepare data =====================
 
 # Suzanna's/Mette's categories:
@@ -13,12 +10,12 @@ library(fastDummies)
 # microRNAarray (nonstring)
 # sn/scRNAseq
 # epigenetics (ChiPseq + methylationArray + bisulfiteSeq)
-# LC-SRM
-# TMT quantitation
+# LC-SRM proteomics
+# TMT proteomics
 # brain metabolomics (p180, Biocrates BA, Metabolon)
 # brain lipidomics 
-# peripheral metabolomics (p180)
-# peripheral lipidomics
+# serum metabolomics (p180, Metabolon)
+# plasma lipidomics
 
 # download de-id data
 rosmap <- syn$get("syn26522644")$path %>% read_csv()
@@ -34,13 +31,15 @@ rosmap_upset_categories <- rosmap %>%
                                    assay == "mirnaArray" ~ "miRNA array",
                                    assay == "snrnaSeq" | assay == "scrnaSeq" ~ "sc/snRNAseq",
                                    dataType == "epigenetics" ~ "epigenetics",
-                                   assay == "label free mass spectrometry" ~ "LC-SRM",
-                                   assay == "TMT quantitation" ~ "TMT quantitation",
+                                   assay == "label free mass spectrometry" ~ "LC-SRM proteomics",
+                                   assay == "TMT quantitation" ~ "TMT proteomics",
                                    assay == "Biocrates p180" & organ == "brain" ~ "brain metabolomics",
-                                   assay == "Biocrates p180" & organ == "blood" ~ "peripheral metabolomics",
-                                   assay == "Biocrates Bile Acids" | assay == "Metabolon" ~ "brain metabolomics",
+                                   assay == "Biocrates p180" & organ == "blood" ~ "serum metabolomics",
+                                   assay == "Biocrates Bile Acids" & organ == "brain" ~ "brain metabolomics",
+                                   assay == "Metabolon" & organ == "brain" ~ "brain metabolomics",
+                                   assay == "Metabolon" & organ == "blood" ~ "serum metabolomics",
                                    assay == "LC-MSMS" & organ == "brain" ~ "brain lipidomics",
-                                   assay == "LC-MSMS" & organ == "blood" ~ "peripheral lipidomics",
+                                   assay == "LC-MSMS" & organ == "blood" ~ "plasma lipidomics",
                                    TRUE ~ NA_character_))
 
 
@@ -72,19 +71,20 @@ sortedUpsetCategories <- c("genomic variants",
                            "sc/snRNAseq",
                            "microglia bulk RNAseq",
                            "epigenetics",
-                           "LC-SRM",
-                           "TMT quantitation",
-                           "peripheral metabolomics",
+                           "LC-SRM proteomics",
+                           "TMT proteomics",
+                           "serum metabolomics",
                            "brain metabolomics",
-                           "peripheral lipidomics",
+                           "plasma lipidomics",
                            "brain lipidomics")
 
 
 # no colors upset plot:
 rosmap_boolean_categories %>%
-  upset(rev(sortedUpsetCategories),
+  upset(sortedUpsetCategories,
         name = "Assay Type", 
         min_size = 3,
+        min_degree = 2,
         width_ratio = 0.2,
         height_ratio = 0.8,
         #sort_sets = FALSE,
@@ -118,7 +118,7 @@ rosmap_boolean_categories %>%
           )
         )
   ) +
-  ggtitle('ROSMAP individuals by assay types')
+  labs(caption = "ROSMAP")
 
 # save plot and store
 
