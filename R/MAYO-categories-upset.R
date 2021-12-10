@@ -7,8 +7,10 @@ mayo <- syn$get("syn26529014")$path %>% read_csv()
 mayo_upset_categories <- mayo %>% 
   mutate(individualID = as.character(individualID),
          upsetCategory = case_when(assay == "label free mass spectrometry" ~ "label free proteomics",
-                                   #assay %in% c("snpArray", "wholeGenomeSeq") ~ "genomic variants",
+                                   dataType == "genomicVariants" ~ "genomic variants",
                                    assay == "rnaSeq" ~ "bulk RNAseq",
+                                   dataType == "epigenetics" ~ "epigenetics",
+                                   dataType == "metabolomics" ~ "metabolomics",
                                    TRUE ~ assay))
 
 # make binary
@@ -29,17 +31,17 @@ mayo_boolean_categories <- mayo_binary_categories
 mayo_boolean_categories[mayo_boolean_cols] <- mayo_boolean_categories[mayo_boolean_cols] == 1
 
 # sorted mayo categories 
-mayoUpsetCategories <- c("snpArray",
-                         "wholeGenomeSeq",
+mayoUpsetCategories <- c("genomic variants",
                          "bulk RNAseq",
                          "label free proteomics",
-                         "ChIPSeq",
-                         "Metabolon")
+                         "epigenetics",
+                         "metabolomics")
 
 # no colors upset plot:
 upset(mayo_boolean_categories,
       mayoUpsetCategories,
       name = "Assay Type", 
+      min_degree = 2,
       width_ratio = 0.2,
       height_ratio = 0.8,
       sort_intersections_by = "cardinality",
@@ -72,7 +74,7 @@ upset(mayo_boolean_categories,
         )
       )
 ) +
-  ggtitle('Mayo individuals by assay type')
+  labs(caption = "MayoRNAseq")
 
 # save and store plot and table
 ggsave("plots/upset-plot-all-mayo-specimens-by-assay.pdf")
