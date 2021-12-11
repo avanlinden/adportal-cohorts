@@ -37,47 +37,69 @@ mayoUpsetCategories <- c("genomic variants",
                          "epigenetics",
                          "metabolomics")
 
-# no colors upset plot:
-upset(mayo_boolean_categories,
-      mayoUpsetCategories,
-      name = "Assay Type", 
-      min_degree = 2,
-      width_ratio = 0.2,
-      height_ratio = 0.8,
-      sort_intersections_by = "cardinality",
-      matrix=(
-        intersection_matrix(
-          geom=geom_point(
-            size=1.7,
-          ),
-          segment=geom_segment(
-            size = 0.4,
-          )
-        )
-      ),
-      base_annotations = list(
-        'Intersection size' = intersection_size(
-          text = list(
-            size = 2.5
-          )
-        )
-      ),
-      set_sizes = upset_set_size() +
-        theme(
-          axis.ticks.x = element_line()
-        ),
-      themes = upset_modify_themes(
-        list(
-          'intersections_matrix' = theme(text = element_text(size = 12)),
-          'overall_sizes' = theme(text = element_text(size = 10)),
-          'Intersection size' = theme(text = element_text(size = 10))
-        )
-      )
-) +
-  labs(caption = "MayoRNAseq")
+# define colors:
 
-# save and store plot and table
-ggsave("plots/upset-plot-all-mayo-specimens-by-assay.pdf")
+bar_color <- "#251454"
+inactive_dot_color <- "#E3E1E1"
+light_stripe_color <- "#EDEDED"
+
+# final version upset plot:
+mayo_boolean_categories %>%
+  upset(
+    mayoUpsetCategories,
+    name = "",
+    min_degree = 2,
+    width_ratio = 0.2,
+    height_ratio = 0.7,
+    #sort_sets = FALSE,
+    sort_intersections_by = "cardinality",
+    stripes = c(light_stripe_color, "white"),
+    matrix = (
+      intersection_matrix(
+        geom = geom_point(size = 2,),
+        segment = geom_segment(size = 0.3,
+                               color = bar_color),
+        outline_color = list(active = bar_color, inactive = inactive_dot_color)
+      )
+    )
+    + scale_color_manual(
+      values = c("TRUE" = bar_color, "FALSE" = inactive_dot_color),
+      breaks = NULL
+    ),
+    base_annotations = list(
+      'Intersection size' = intersection_size(
+        mapping = aes(fill = "bars_color"),
+        text = list(size = 3),
+        bar_number_threshold = 150
+      ) +
+        scale_fill_manual(values = c("bars_color" = bar_color), guide = "none")
+    ),
+    set_sizes = upset_set_size(geom = geom_bar(
+      mapping = aes(fill = "bars_color"),
+      width = 0.5
+    )) +
+      theme(axis.ticks.x = element_line(),
+            axis.text.x = element_text(angle = 0)) +
+      scale_fill_manual(values = c("bars_color" = bar_color), guide = "none"),
+    themes = upset_modify_themes(
+      list(
+        'intersections_matrix' = theme(text = element_text(size = 12),
+                                       panel.grid = element_blank()),
+        'overall_sizes' = theme(text = element_text(size = 10),
+                                panel.grid = element_blank()),
+        'Intersection size' = theme(text = element_text(size = 12),
+                                    panel.grid = element_blank())
+      )
+    )
+  ) +
+  labs(caption = "MayoRNASeq")
+
+# save plot and store
+
+ggsave("plots/final/mayo_upset.png",
+       width = 9,
+       height = 6,
+       units = "in")
 
 # save upset plot to synapse
 syn$store(synapse$entity$File(here("plots/upset-plot-all-mayo-specimens-by-assay.pdf"), parent = "syn26436146"))

@@ -86,53 +86,53 @@ light_stripe_color <- "#EDEDED"
 
 # no colors upset plot:
 rosmap_boolean_categories %>%
-  upset(sortedUpsetCategories, 
-        name= "",
-        min_size = 10,
-        min_degree = 2,
-        width_ratio = 0.1,
-        height_ratio = 0.9,
-        #sort_sets = FALSE,
-        sort_intersections_by = "cardinality",
-        stripes = c(light_stripe_color, "white"),
-        matrix=(
-          intersection_matrix(
-            geom=geom_point(
-              size=2,
-            ),
-            segment=geom_segment(
-              size = 0.3,
-              color = bar_color
-            ),
-            outline_color = list(active = bar_color, inactive = inactive_dot_color)
-          )
-        ) 
-        + scale_color_manual(values = c("TRUE" = bar_color, "FALSE" = inactive_dot_color), breaks = NULL),
-        base_annotations = list(
-          'Intersection size' = intersection_size(
-            mapping = aes(fill = "bars_color"),
-            text = list(size = 2),
-            bar_number_threshold = 150
-          ) + 
-            scale_fill_manual(values = c("bars_color" = bar_color), guide = "none")
-        ),
-        set_sizes = upset_set_size(
-          geom = geom_bar(mapping = aes(fill = "bars_color"),
-                          width = 0.9)
-        ) +
-          theme(axis.ticks.x = element_line(),
-                axis.text.x = element_text(angle = 90)) +
-          scale_fill_manual(values = c("bars_color" = bar_color), guide = "none"),
-        themes = upset_modify_themes(
-          list(
-            'intersections_matrix' = theme(text = element_text(size = 12),
-                                           panel.grid = element_blank()),
-            'overall_sizes' = theme(text = element_text(size = 10),
-                                    panel.grid = element_blank()),
-            'Intersection size' = theme(text = element_text(size = 12),
-                                        panel.grid = element_blank())
-          )
-        )
+  upset(
+    sortedUpsetCategories,
+    name = "",
+    min_size = 10,
+    min_degree = 2,
+    width_ratio = 0.1,
+    height_ratio = 0.9,
+    #sort_sets = FALSE,
+    sort_intersections_by = "cardinality",
+    stripes = c(light_stripe_color, "white"),
+    matrix = (
+      intersection_matrix(
+        geom = geom_point(size = 2,),
+        segment = geom_segment(size = 0.3,
+                               color = bar_color),
+        outline_color = list(active = bar_color, inactive = inactive_dot_color)
+      )
+    )
+    + scale_color_manual(
+      values = c("TRUE" = bar_color, "FALSE" = inactive_dot_color),
+      breaks = NULL
+    ),
+    base_annotations = list(
+      'Intersection size' = intersection_size(
+        mapping = aes(fill = "bars_color"),
+        text = list(size = 2),
+        bar_number_threshold = 150
+      ) +
+        scale_fill_manual(values = c("bars_color" = bar_color), guide = "none")
+    ),
+    set_sizes = upset_set_size(geom = geom_bar(
+      mapping = aes(fill = "bars_color"),
+      width = 0.9
+    )) +
+      theme(axis.ticks.x = element_line(),
+            axis.text.x = element_text(angle = 90)) +
+      scale_fill_manual(values = c("bars_color" = bar_color), guide = "none"),
+    themes = upset_modify_themes(
+      list(
+        'intersections_matrix' = theme(text = element_text(size = 12),
+                                       panel.grid = element_blank()),
+        'overall_sizes' = theme(text = element_text(size = 10),
+                                panel.grid = element_blank()),
+        'Intersection size' = theme(text = element_text(size = 12),
+                                    panel.grid = element_blank())
+      )
+    )
   ) +
   labs(caption = "ROSMAP")
 
@@ -144,7 +144,7 @@ ggsave("plots/final/rosmap_upset_minsize10.pdf",
        units = "in")
 
 # save upset plot to synapse
-syn$store(synapse$entity$File(here("plots/upset-plot-all-rosmap-specimens-by-assay.pdf"), parent = "syn26436146"))
+#syn$store(synapse$entity$File(here("plots/upset-plot-all-rosmap-specimens-by-assay.pdf"), parent = "syn26436146"))
 
 
 # save boolean table to synapse
