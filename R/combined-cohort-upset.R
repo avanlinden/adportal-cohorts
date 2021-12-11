@@ -114,7 +114,7 @@ comb_upset_data %>%
         text = list(size = 3),
         bar_number_threshold = 150
       ) +
-        scale_fill_manual(values = c("ROSMAP" = "#5A478F",
+        scale_fill_manual(values = c("ROSMAP" = "#5171C0",
                                      "MSBB" = "#5BB0B5",
                                      "MAYO" = "#E566A1"
                                      )
@@ -142,7 +142,7 @@ comb_upset_data %>%
 
 # save plot and store
 
-ggsave("plots/final/combined_cohorts_upset.png",
+ggsave("plots/final/combined_cohorts_upset.pdf",
        width = 12,
        height = 6.75,
        units = "in")
