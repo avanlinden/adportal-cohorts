@@ -44,7 +44,7 @@ ggplot() +
   theme(legend.margin = margin(1, 1, 1, 1, unit = "pt")) +
   labs(caption = "MSBB")
 
-ggsave("plots/final/rosmap_venn_gvar_monorna_scrna_brainbulkrna.png",
+ggsave("plots/final/msbb_venn_gvar_bulkrna_epi_prot.pdf",
        width = 6,
        height = 5,
        units = "in")
