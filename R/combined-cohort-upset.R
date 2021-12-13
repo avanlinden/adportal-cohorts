@@ -2,18 +2,30 @@
 
 # categories: brain only, WGS, bulk brain RNAseq, all proteomics, all metabolomics
 
+# get datasets
+# download de-id data
+rosmap <- syn$get("syn26522644")$path %>% read_csv()
+mayo <- syn$get("syn26529014")$path %>% read_csv()
+msbb <- syn$get("syn26529170")$path %>% read_csv()
+
 # combine three de-id datasets
 
 colnames(rosmap)
 colnames(msbb)
 colnames(mayo)
 
-# remove bulk brain microglia samples from ROSMAP, and cellType column
-remove_microglia_ids <- rosmap %>% filter(cellType == "microglia" & assay == "rnaSeq") %>% pull(individualID)
+# create new columns for removal: remove blood and sorted microglia
+# then remove
 rosmap_2 <- rosmap %>% 
-  filter(!(individualID %in% remove_microglia_ids)) %>% 
+  mutate(removeRow = case_when(cellType == "microglia" & assay == "rnaSeq" ~ TRUE,
+                               organ == "blood" & assay == "rnaSeq" ~ TRUE,
+                               organ == "blood" & dataType == "metabolomics" ~ TRUE,
+                               organ == "blood" & dataType == "proteomics" ~ TRUE,
+                               TRUE ~ FALSE)) %>% 
+  filter(removeRow == FALSE) %>% 
   select(-cellType) %>% 
   mutate(cohort = "ROSMAP")
+
 
 # make mayo ids character
 mayo <- mayo %>% 
