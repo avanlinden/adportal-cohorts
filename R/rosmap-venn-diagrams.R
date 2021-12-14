@@ -126,15 +126,22 @@ ggplot() +
 
 
 # 4 category plots
-
+#rnaseq blood overlap
 ros_venn_list4 <- list(`monocyte RNAseq` = rosmap_boolean_categories$individualID[rosmap_boolean_categories$`monocyte bulk RNAseq` == TRUE],
                        `genomic variants` = rosmap_boolean_categories$individualID[rosmap_boolean_categories$`genomic variants` == TRUE],
                        `brain sc/snRNAseq` = rosmap_boolean_categories$individualID[rosmap_boolean_categories$`sc/snRNAseq` == TRUE],
                        `brain bulk RNAseq` = rosmap_boolean_categories$individualID[rosmap_boolean_categories$`brain bulk RNAseq` == TRUE]
                        )
   
+# rosmap blood metabolomics
 
-venn4 <- Venn(ros_venn_list4)
+ros_venn_list_met4 <- list(`monocyte RNAseq` = rosmap_boolean_categories$individualID[rosmap_boolean_categories$`monocyte bulk RNAseq` == TRUE],
+                       `genomic variants` = rosmap_boolean_categories$individualID[rosmap_boolean_categories$`genomic variants` == TRUE],
+                       `serum metabolomics` = rosmap_boolean_categories$individualID[rosmap_boolean_categories$`serum metabolomics` == TRUE],
+                       `plasma lipidomics` = rosmap_boolean_categories$individualID[rosmap_boolean_categories$`plasma lipidomics` == TRUE]
+)
+
+venn4 <- Venn(ros_venn_list_met4)
 data4 <- process_data(venn4)
   
   ### 4 cat Extensible plots with NO edge colors ----------------
@@ -142,10 +149,10 @@ data4 <- process_data(venn4)
 ggplot() +
   geom_sf(aes(fill = count), data = venn_region(data4)) +
   geom_sf(color = "#0D1C38", size = 0.5, data = venn_setedge(data4), show.legend = FALSE) +
-  geom_sf_text(aes(label = stringr::str_wrap(name, width = 16)), 
+  geom_sf_text(aes(label = stringr::str_wrap(name, width = 8)), 
                size = 4, 
                vjust = c(0, 0, 0, 0),
-               nudge_y = c(0, 0, 0, 0),
+               nudge_y = c(-0.02, 0, 0, -0.02),
                #nudge_x = c(0, 0, 20, 0, 10),
                data = venn_setlabel(data4)) +
   geom_sf_label(aes(label = count), label.size = NA, color = "black", alpha = 0, data = venn_region(data4)) +
@@ -161,11 +168,12 @@ ggplot() +
   ) +
   scale_color_sage_d(level = "600") +
   scale_x_continuous(expand = expansion(mult = .2)) +
+  scale_y_continuous(expand = expansion(mult = .2)) +
   theme_void() + 
   theme(legend.margin = margin(1, 1, 1, 1, unit = "pt")) +
   labs(caption = "ROSMAP")
 
-ggsave("plots/final/rosmap_venn_gvar_monorna_scrna_brainbulkrna.png",
+ggsave("plots/final/rosmap_venn_gvar_monorna_serummet_plasmalipid.pdf",
        width = 6,
        height = 5,
        units = "in")
@@ -201,7 +209,7 @@ data3 <- process_data(venn3)
 ggplot() +
   geom_sf(aes(fill = count), data = venn_region(data3)) +
   geom_sf(color = "#0D1C38", size = 0.5, data = venn_setedge(data3), show.legend = FALSE) +
-  geom_sf_text(aes(label = stringr::str_wrap(name, width = 10)), 
+  geom_sf_text(aes(label = stringr::str_wrap(name, width = 8)), 
                size = 4, 
                hjust = c(0.5, 0.5, 0.5),
                #nudge_y = c(0, 0, 0, 0),
@@ -228,4 +236,5 @@ ggsave("plots/final/rosmap_venn_gvar_plasmalipid_brainlipid.pdf",
        width = 6,
        height = 5,
        units = "in")
+
 
